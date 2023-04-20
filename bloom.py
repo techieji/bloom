@@ -8,20 +8,19 @@ class bloom:
 
     def _set_bit(self, n, v):
         n = n % self.bitlen
-        print(n)
         self.ba[n // 8] ^= v << (n % 8)
 
     def _get_bit(self, n):
         n = n % self.bitlen
-        print('get', n)
         return (self.ba[n // 8] >> (n % 8)) % 2
 
     @staticmethod
     def _split_hash(h, k):
-        l = ceil(log(h, 2))         # Python numbers are variable length?
+        h = abs(h) + 1
+        l = ceil(log(h, 2))   # bit length
         step = l // k
         prev = 0
-        for i in range(k):
+        for i in range(1, k):
             mv = i * step
             prev = h - (h >> mv << mv) - prev
             yield prev
@@ -32,7 +31,3 @@ class bloom:
     def add(self, item):
         for x in bloom._split_hash(hash(item), self.k):
             self._set_bit(x, 1)
-
-b = bloom(10)
-b.add(10)
-print(10 in b)
